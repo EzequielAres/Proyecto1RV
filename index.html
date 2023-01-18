@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Proyecto 1</title>
+    <meta name="description" content="Proyecto 1">
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="controller-listener.js"></script>
+    <script src="player-move.js"></script>
+    <script src="raycaster-extras.js"></script>
+    <script>
+      
+      var score = 0;
+      var boxCount = 0;
+              
+      setInterval(() => {
+        var scoreText = document.getElementById('scoreText');
+        scoreText.setAttribute('value', `Score: ${score}`);
+        
+        var boxText = document.getElementById('boxText');
+        boxText.setAttribute('value', `Left boxes: ${boxCount}`);
+      }, 100)
+      
+      AFRAME.registerComponent('box-generation', {
+        init: function () {
+          // Solution for Creating Entities.
+          var sceneEl = document.querySelector('a-scene'); 
+          
+          for (var i = 0; i < 30; i++) {
+            var boxEl = document.createElement('a-entity');
+            var position = {x: Math.random() * 120, y: Math.random() * 15, z: Math.random() * 220};
+            var toX = (Math.random() * ((position.x + 30) - position.x) + position.x);
+            var toY = (Math.random() * ((position.y + 10) - position.y) + position.y);
+            var toZ = (Math.random() * ((position.z + 30) - position.z) + position.z);
+            var toPosition = toX + " " + toY + " " + toZ;
+            var animationPosition = "property: position; dir: alternate; loop: true; to: " + toPosition + "; dur: " + (Math.floor(Math.random() * (5500 - 3000) + 3000));
+            
+            boxEl.setAttribute('geometry', 'primitive:box');
+            boxEl.setAttribute('material', {color: '#EF2D5E'});
+            boxEl.setAttribute('position', position);
+            boxEl.setAttribute('animation', animationPosition); 
+            boxEl.setAttribute('raycaster-target', {});
+            boxEl.setAttribute('raycaster-destroy', {});
+            boxEl.addEventListener('click', function(e) {
+              var sceneEl = document.querySelector('a-scene'); 
+              --boxCount;
+              score += 5;   
+              sceneEl.removeChild(e.target);
+            });
+            sceneEl.appendChild(boxEl);
+            ++boxCount;
+          }
+        }
+      });
+      
+    function checkWinCondition() {
+      if (boxCount == 0) {
+        var scoreText = document.getElementById('winText');
+        scoreText.setAttribute('value', `You Win!`);
+      }
+    }
+     
+    const interval = setInterval(checkWinCondition, 1000);
+    </script>
+  </head>
+  <body>
+    <a-scene box-generation>
+      
+      <a-assets >
+        <img id="gradient" src="https://cdn.glitch.global/66cc0b21-7be8-4e21-b4b1-e6c271fa686e/gradient-fade.png" />
+      </a-assets>
+        
+      <a-assets>
+        <a-asset-item id="ruins1" src="https://cdn.glitch.global/66cc0b21-7be8-4e21-b4b1-e6c271fa686e/ruins1.glb" response-type="arraybuffer"></a-asset-item>
+        <a-asset-item id="ruins2" src="https://cdn.glitch.global/66cc0b21-7be8-4e21-b4b1-e6c271fa686e/ruins2.glb" response-type="arraybuffer"></a-asset-item>
+      </a-assets>
+
+      <a-entity 
+          id="ruins1Entity"
+          gltf-model="#ruins1"
+          position="0 -0.2 150" 
+          scale="10 2.5 10">
+      </a-entity>
+      
+      <a-entity 
+          id="ruins2Entity"
+          gltf-model="#ruins2"
+          position="50 0 0"
+          scale="10 2.5 10">
+        
+      </a-entity>
+
+      <a-box material="src: https://cdn.glitch.global/66cc0b21-7be8-4e21-b4b1-e6c271fa686e/Wall.jpg;" position="0 0 -95" width="300" height="300"></a-box>
+      <a-box material="src: https://cdn.glitch.global/66cc0b21-7be8-4e21-b4b1-e6c271fa686e/Wall.jpg;" position="0 0 250" width="300" height="300"></a-box>
+      <a-box material="src: https://cdn.glitch.global/66cc0b21-7be8-4e21-b4b1-e6c271fa686e/Wall.jpg;" position="150 0 80" rotation="0 -90 0" width="370" height="300"></a-box>
+      <a-box material="src: https://cdn.glitch.global/66cc0b21-7be8-4e21-b4b1-e6c271fa686e/Wall.jpg;" position="-150 0 80" rotation="0 -90 0" width="370" height="300"></a-box>
+
+      <a-entity 
+        id="player" 
+        position="0 0 0" 
+        player-move="controllerListenerId: #controller-data;">
+        <a-text value="sfdsdf" position="0 0 0" width="5" color="white"></a-text>
+        <a-camera>
+          <a-entity cursor="fuse: true; fuseTimeout: 500"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.02"
+            material="color: black; shader: flat"></a-entity>
+          <a-text id="winText" value="" scale="0.5 0.5 0.5" position="-0.22 0 -1"></a-text>
+          <a-text id="scoreText" value="" scale="0.2 0.2 0.2" position="-0.65 0.25 -1"></a-text>
+          <a-text id="boxText" value="" scale="0.2 0.2 0.2" position="0.35 0.25 -1"></a-text>
+        </a-camera>
+    
+        <a-entity 
+            id="controller-data" 
+            controller-listener="leftControllerId:  #left-controller; 
+                                 rightControllerId: #right-controller;">
+        </a-entity>
+
+        <a-entity 
+            id="left-controller"
+            oculus-touch-controls="hand: left">
+        </a-entity>
+
+        <a-entity
+            id="right-controller"
+            oculus-touch-controls="hand: right"
+            raycaster="objects: .raycaster-target, .environmentGround;"
+            raycaster-extras="controllerListenerId: #controller-data; 
+                              beamImageSrc: #gradient; beamLength: 2.5;">
+        </a-entity>
+      </a-entity>
+      
+      <a-sky material="src: https://cdn.glitch.global/66cc0b21-7be8-4e21-b4b1-e6c271fa686e/Sky.png;"></a-sky>
+      <a-plane material="src: https://cdn.glitch.global/66cc0b21-7be8-4e21-b4b1-e6c271fa686e/TexturesCom_Pavement_SlateSquare2_header.jpg;" position="0 0 80" rotation="-90 0 0" width="300" height="350"></a-plane>
+    
+    </a-scene>
+
+  </body>
+</html>
