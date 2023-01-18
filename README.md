@@ -16,3 +16,5 @@ A continuacion detallare una serie de ventajas con respecto al uso de WebXR para
 
 ### Dispositivos
 En mi caso, la experiencia que he creado se puede disfrutar mediante teclado y raton como con dispositivos de realidad virtual.
+
+### Enlace al [despliegue](https://ezequielares.github.io/Proyecto1RV/)
