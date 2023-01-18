@@ -7,6 +7,10 @@ Mediante los recursos dispuestos en la moodle he investigado en los diferentes e
 - controller-listener -> Componente necesario para utilizar los mandos de la realidad virtual para las diferentes acciones.
 - player-move -> Componente que se encarga del movimiento del jugador usando el controller-listener
 - raycaster-extras -> Componente necesario para realizar el raycast del mando hacia los objetos (Utilizado en la idea original, que era utilizar el mando para destruir los cubos pero por complejidad en la programacion no he podido llevarlo a cabo)
+- A-box -> Este componente es la caja que destruiremos
+- A-assets -> Utilizado para colocar las texturas
+- A-entity -> Componente base que modificaremos con atributos
+- A-text -> Componente para mostrar texto
 
 ### Ventajas de utilizar WebXR
 A continuacion detallare una serie de ventajas con respecto al uso de WebXR para la creacion de experiencias o juegos en realidad virtual:
